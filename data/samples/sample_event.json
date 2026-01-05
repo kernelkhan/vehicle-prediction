@@ -1,0 +1,18 @@
+{
+  "event_id": "20250101090000_track5",
+  "timestamp": "2025-01-01T09:00:00Z",
+  "risk_level": "critical",
+  "risk_score": 0.88,
+  "track_id": 5,
+  "reasons": [
+    "sudden deceleration",
+    "critical TTC (0.8s)",
+    "high closing speed"
+  ],
+  "location": {
+    "latitude": 12.9716,
+    "longitude": 77.5946,
+    "source": "mock"
+  }
+}
+

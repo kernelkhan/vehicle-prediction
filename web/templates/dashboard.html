@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Live Dashboard{% endblock %}
+{% block head_extra %}
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+{% endblock %}
+
+{% block content %}
+<section class="grid">
+  <div class="card video-card">
+    <h2>Live Feed</h2>
+    <img id="live-stream" src="/video-feed" alt="Live Stream" />
+    <div class="status">
+      <span id="risk-status">Risk Status: --</span>
+    </div>
+  </div>
+  <div class="card map-card">
+    <h2>Location</h2>
+    <div id="map"></div>
+  </div>
+</section>
+
+<section class="card timeline-card">
+  <h2>Recent Events</h2>
+  <ul id="event-list"></ul>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/axios@1.6.1/dist/axios.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', path='js/stream.js') }}"></script>
+<script src="{{ url_for('static', path='js/map.js') }}"></script>
+{% endblock %}
+

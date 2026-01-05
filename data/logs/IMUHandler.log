@@ -1,0 +1,1 @@
+2025-11-14 15:42:46 | WARNING | IMUHandler | IMU not available: No module named 'mpu6050'. Using simulated readings.

@@ -1,0 +1,51 @@
+DATA FLOW OVERVIEW
+
+1. SENSOR INGEST
+   Camera ----> Frame Buffer ----+
+                                 |
+   IMU (MPU-6050) -------------> Risk Engine (jerk heuristic)
+                                 |
+   GPS / IP lookup -------------> Alert Manager (location tagging)
+                                 |
+   Ultrasonic (optional) ------> Future extension hooks
+
+2. VISION PIPELINE
+   Frame --> YOLOv8 Detector --> Detections --> Tracker --> Tracks
+          \------------------------------------------------------/
+
+3. FEATURE EXTRACTION
+   Tracks --> Motion Feature Extractor --> velocity/accel/heading/lateral
+   Tracks --> TTC Estimator -----------> time-to-collision pairs
+
+4. RISK ANALYSIS
+   Motion Features + TTC + IMU jerk --> Risk Engine
+   Risk Engine --> RiskAssessments (score + reasons)
+
+5. EVENT HANDLING
+   High/Critical Risk + jerk --> Alert Manager
+   Alert Manager:
+      - Snapshot capture (Media Manager)
+      - Clip export (Ring Buffer)
+      - Local Event Log (JSON)
+      - Firebase (Realtime DB + Storage)
+      - Notifier (SMS / WhatsApp / Email)
+
+6. DASHBOARD & CLIENTS
+   Stream Manager <-- Annotated Frames <-- Pipeline
+   FastAPI Routes:
+      /video-feed  -> MJPEG stream
+      /api/events  -> Event history (local + Firebase URLs)
+   Frontend (Leaflet + JS):
+      - Live risk indicator
+      - Timeline & map updates
+
+7. DATA PERSISTENCE
+   Local file system:
+      data/media/snapshots/*.jpg
+      data/media/clips/*.mp4
+      data/logs/events.json
+   Firebase (optional):
+      - Public URLs for media
+      - Dashboard aggregator
+
+

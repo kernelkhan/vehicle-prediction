@@ -1,0 +1,1 @@
+2025-11-14 15:42:46 | WARNING | GPSHandler | GPS serial port unavailable: could not open port '/dev/ttyUSB0': FileNotFoundError(2, 'The system cannot find the path specified.', None, 3). Will use IP geolocation fallback.

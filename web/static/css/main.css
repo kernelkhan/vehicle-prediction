@@ -1,0 +1,138 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #0d1117;
+  color: #c9d1d9;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+}
+
+.navbar a {
+  color: #58a6ff;
+  margin-left: 1rem;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  letter-spacing: 0.05em;
+}
+
+main {
+  padding: 2rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  padding: 1.5rem;
+  background: #161b22;
+  border-radius: 12px;
+  border: 1px solid #30363d;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.video-card img {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid #30363d;
+}
+
+.status {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #8b949e;
+}
+
+#map {
+  height: 320px;
+  border-radius: 12px;
+}
+
+.timeline-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.timeline-card li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #30363d;
+}
+
+.event-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.event-table th,
+.event-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #30363d;
+  text-align: left;
+}
+
+.event-table th {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #8b949e;
+}
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.badge.low {
+  background: rgba(56, 139, 253, 0.2);
+  color: #58a6ff;
+}
+
+.badge.medium {
+  background: rgba(241, 196, 15, 0.2);
+  color: #f1c40f;
+}
+
+.badge.high {
+  background: rgba(230, 126, 34, 0.2);
+  color: #e67e22;
+}
+
+.badge.critical {
+  background: rgba(231, 76, 60, 0.2);
+  color: #e74c3c;
+}
+
+@media (max-width: 768px) {
+  main {
+    padding: 1rem;
+  }
+}
+

@@ -1,0 +1,21 @@
+{
+  "events": [
+    {
+      "event_id": "20250101120000_track1",
+      "timestamp": "2025-01-01T12:00:00Z",
+      "risk_level": "high",
+      "risk_score": 0.72,
+      "track_id": 1,
+      "reasons": [
+        "sudden deceleration",
+        "critical TTC (1.2s)"
+      ],
+      "location": {
+        "latitude": 19.076,
+        "longitude": 72.8777,
+        "source": "mock"
+      }
+    }
+  ]
+}
+

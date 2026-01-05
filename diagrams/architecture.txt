@@ -1,0 +1,51 @@
+SMART VISION-BASED ACCIDENT PREDICTION & EMERGENCY DISPATCH SYSTEM
+
+ +---------------------------- Raspberry Pi 4 -----------------------------+
+ |                                                                         |
+ |  +-------------------+     +----------------+     +------------------+  |
+ |  |   Video Capture    | --> |  Detection     | --> |   Tracking        |  |
+ |  | (Pi Cam / USB Cam) |     | (YOLOv8 ONNX)  |     | (ByteTrack / Fallback)|
+ |  +-------------------+     +----------------+     +------------------+  |
+ |             |                        |                        |         |
+ |             v                        v                        v         |
+ |       +-----------+          +---------------+         +----------------+|
+ |       | Ring      |          | Motion Feature|         | Time-to-Collision|
+ |       | Buffer    |          | Extraction    |         | Estimator        |
+ |       +-----------+          +---------------+         +----------------+|
+ |             |                        \                       /          |
+ |             v                         \                     /           |
+ |       +--------------------------------------------------------------+  |
+ |       |                       Risk Engine                            |  |
+ |       | (Heuristic scoring: decel, TTC, jerk, trajectory)            |  |
+ |       +--------------------------------------------------------------+  |
+ |                              |                                         |
+ |                              v                                         |
+ |         +--------------------------------------------+                 |
+ |         |             Alert Manager                   |                |
+ |         |  - Snapshot & clip capture (Ring buffer)    |                |
+ |         |  - Location (GPS/IP) + IMU jerk validation  |                |
+ |         |  - Notifier (SMS/WhatsApp/Email)            |                |
+ |         |  - Firebase uploader + local event log      |                |
+ |         +--------------------+------------------------+                |
+ |                              |                                         |
+ |             +-------------------------------+                         |
+ |             |                               |                         |
+ |             v                               v                         |
+ |   +-----------------------+       +-------------------------+         |
+ |   | Local Storage (media, |       | FastAPI Dashboard API   |         |
+ |   | logs, mock data)      |       |  - Live stream endpoint |         |
+ |   +-----------------------+       |  - Event log REST API   |         |
+ |                                   |  - Map & overlays       |         |
+ |                                   +------------+------------+         |
+ |                                                |                      |
+ +------------------------------------------------|----------------------+
+                                                  |
+                                                  v
+                                  +-------------------------------+
+                                  | Web Clients (Desktop/Mobile)  |
+                                  |  - Live MJPEG stream          |
+                                  |  - Event timeline + map       |
+                                  |  - Historical media playback  |
+                                  +-------------------------------+
+
+
