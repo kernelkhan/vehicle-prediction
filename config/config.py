@@ -81,7 +81,8 @@ class AlertSettings(BaseModel):
     twilio_sid: Optional[str] = None
     twilio_token: Optional[str] = None
     clip_seconds: int = 12
-    clip_codec: str = "mp4v"
+    clip_codec: str = "XVID"  # More compatible than mp4v on Windows
+    cooldown_seconds: float = 5.0  # Minimum seconds between alerts for same track
 
 
 class HardwareSettings(BaseModel):

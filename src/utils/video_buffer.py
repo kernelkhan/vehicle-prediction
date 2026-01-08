@@ -71,6 +71,7 @@ class RingBufferRecorder:
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
         writer = None
+        frames_written = 0
         try:
             for _, frame_bytes in selected:
                 frame = self._decode_frame(frame_bytes)
@@ -78,17 +79,30 @@ class RingBufferRecorder:
                     continue
 
                 if writer is None:
+                    # Get actual frame dimensions from first valid frame
+                    h, w = frame.shape[:2]
                     fourcc = cv2.VideoWriter_fourcc(*self.codec)
                     writer = cv2.VideoWriter(
-                        str(output_path), fourcc, self.fps, self.resolution
+                        str(output_path), fourcc, self.fps, (w, h)
                     )
+                    if not writer.isOpened():
+                        self.logger.error("Failed to open video writer for %s", output_path)
+                        return None
 
                 writer.write(frame)
+                frames_written += 1
+        except Exception as e:
+            self.logger.error("Error exporting clip: %s", e)
+            return None
         finally:
             if writer is not None:
                 writer.release()
 
-        self.logger.info("Exported clip to %s", output_path)
+        if frames_written == 0:
+            self.logger.warning("No frames written to clip %s", output_path)
+            return None
+
+        self.logger.info("Exported clip to %s (%d frames)", output_path, frames_written)
         return output_path
 
     def _decode_frame(self, frame_bytes: bytes):

@@ -1,0 +1,87 @@
+[
+  {
+    "event_id": "20250114153022_track3",
+    "timestamp": "2025-01-14T15:30:22.543Z",
+    "risk_level": "high",
+    "risk_score": 0.75,
+    "track_id": 3,
+    "class_name": "car",
+    "confidence": 0.89,
+    "bbox": [320, 180, 450, 280],
+    "reasons": [
+      "sudden deceleration (8.2 m/s²)",
+      "low TTC (2.1s)",
+      "high velocity (15.3 m/s)"
+    ],
+    "motion_features": {
+      "velocity": 15.3,
+      "acceleration": -8.2,
+      "heading_change": 12.5,
+      "lateral_drift": 1.2
+    },
+    "location": {
+      "latitude": 28.6139,
+      "longitude": 77.2090,
+      "source": "mock"
+    },
+    "snapshot_path": "data/media/snapshots/20250114_153022_track3.jpg",
+    "clip_path": "data/media/clips/20250114_153022_track3.mp4"
+  },
+  {
+    "event_id": "20250114153045_track7",
+    "timestamp": "2025-01-14T15:30:45.821Z",
+    "risk_level": "critical",
+    "risk_score": 0.92,
+    "track_id": 7,
+    "class_name": "truck",
+    "confidence": 0.94,
+    "bbox": [150, 200, 380, 350],
+    "reasons": [
+      "critical TTC (0.9s)",
+      "sudden deceleration (12.5 m/s²)",
+      "trajectory convergence",
+      "high closing speed (18.5 m/s)"
+    ],
+    "motion_features": {
+      "velocity": 18.5,
+      "acceleration": -12.5,
+      "heading_change": 8.3,
+      "lateral_drift": 2.1
+    },
+    "location": {
+      "latitude": 28.6141,
+      "longitude": 77.2092,
+      "source": "mock"
+    },
+    "snapshot_path": "data/media/snapshots/20250114_153045_track7.jpg",
+    "clip_path": "data/media/clips/20250114_153045_track7.mp4"
+  },
+  {
+    "event_id": "20250114153112_track2",
+    "timestamp": "2025-01-14T15:31:12.156Z",
+    "risk_level": "medium",
+    "risk_score": 0.58,
+    "track_id": 2,
+    "class_name": "person",
+    "confidence": 0.76,
+    "bbox": [500, 300, 550, 450],
+    "reasons": [
+      "moderate heading change (25.3°)",
+      "warning TTC (4.2s)"
+    ],
+    "motion_features": {
+      "velocity": 2.1,
+      "acceleration": -1.5,
+      "heading_change": 25.3,
+      "lateral_drift": 0.8
+    },
+    "location": {
+      "latitude": 28.6140,
+      "longitude": 77.2091,
+      "source": "mock"
+    },
+    "snapshot_path": "data/media/snapshots/20250114_153112_track2.jpg",
+    "clip_path": "data/media/clips/20250114_153112_track2.mp4"
+  }
+]
+

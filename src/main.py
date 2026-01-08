@@ -98,6 +98,7 @@ class AccidentDetectionPipeline:
             firebase_client=firebase_client,
             clip_buffer=self.ring_buffer,
             log_dir=log_dir,
+            cooldown_seconds=config.alert.cooldown_seconds,
         )
 
         self.imu_handler = IMUHandler(log_dir=log_dir) if config.hardware.use_imu else None
@@ -122,13 +123,28 @@ class AccidentDetectionPipeline:
         capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.config.stream.resolution[1])
         capture.set(cv2.CAP_PROP_FPS, self.config.stream.fps)
 
+        # Check if video source is a file (not webcam)
+        is_video_file = isinstance(self.video_source, (str, Path)) and Path(self.video_source).exists()
+        consecutive_failures = 0
+        max_failures = 10  # Allow 10 retries before giving up
+        
         self.logger.info("Pipeline started. Press Ctrl+C to exit.")
         while not self.stop_requested:
             ret, frame = capture.read()
             if not ret:
-                self.logger.warning("Frame grab failed; retrying...")
-                time.sleep(0.1)
+                consecutive_failures += 1
+                if is_video_file and consecutive_failures >= max_failures:
+                    self.logger.info("Video file ended or reached end of stream. Stopping pipeline.")
+                    break
+                elif not is_video_file:
+                    self.logger.warning("Frame grab failed; retrying...")
+                    time.sleep(0.1)
+                else:
+                    self.logger.warning("Frame grab failed (%d/%d); retrying...", consecutive_failures, max_failures)
+                    time.sleep(0.1)
                 continue
+            
+            consecutive_failures = 0  # Reset on successful read
 
             timestamp = time.time()
             self._update_sensors(timestamp)

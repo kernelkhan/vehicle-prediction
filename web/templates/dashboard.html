@@ -11,7 +11,13 @@
 <section class="grid">
   <div class="card video-card">
     <h2>Live Feed</h2>
-    <img id="live-stream" src="/video-feed" alt="Live Stream" />
+    <div id="video-container">
+      <img id="live-stream" src="/video-feed" alt="Live Stream" />
+      <div id="video-placeholder" class="video-placeholder">
+        <p>Waiting for video stream...</p>
+        <p class="hint">Start the detection pipeline to see live feed</p>
+      </div>
+    </div>
     <div class="status">
       <span id="risk-status">Risk Status: --</span>
     </div>

@@ -5,13 +5,13 @@ from dataclasses import dataclass, field
 
 @dataclass
 class RiskThresholds:
-    velocity_high: float = 12.0  # m/s approx 43 km/h
-    deceleration_high: float = 6.0  # m/s^2
-    heading_change_high: float = 45.0  # degrees
-    lateral_drift_high: float = 3.0  # m/s lateral component
-    ttc_critical: float = 1.5  # seconds
-    ttc_warning: float = 3.0  # seconds
-    freeze_duration: float = 1.5  # seconds without motion
+    velocity_high: float = 15.0  # m/s approx 54 km/h (increased from 12.0)
+    deceleration_high: float = 8.0  # m/s^2 (increased from 6.0)
+    heading_change_high: float = 60.0  # degrees (increased from 45.0)
+    lateral_drift_high: float = 4.0  # m/s lateral component (increased from 3.0)
+    ttc_critical: float = 1.0  # seconds (decreased from 1.5 - more critical)
+    ttc_warning: float = 2.5  # seconds (decreased from 3.0)
+    freeze_duration: float = 2.0  # seconds without motion (increased from 1.5)
 
 
 @dataclass

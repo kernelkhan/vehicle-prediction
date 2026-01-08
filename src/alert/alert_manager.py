@@ -30,6 +30,7 @@ class AlertManager:
         firebase_client: Optional[FirebaseClient] = None,
         clip_buffer: Optional[RingBufferRecorder] = None,
         log_dir: Optional[Path] = None,
+        cooldown_seconds: float = 5.0,
     ) -> None:
         self.media_manager = media_manager
         self.event_logger = event_logger
@@ -37,6 +38,8 @@ class AlertManager:
         self.firebase_client = firebase_client
         self.clip_buffer = clip_buffer
         self.logger = get_logger("AlertManager", log_dir)
+        self.cooldown_seconds = cooldown_seconds
+        self.last_alert_time: dict[int, float] = {}  # track_id -> last alert timestamp
 
     def handle_risk_event(
         self,
@@ -45,6 +48,20 @@ class AlertManager:
         frame,
         location: Optional[Location],
     ) -> None:
+        # Cooldown check: prevent duplicate alerts for the same track
+        current_time = time.time()
+        last_time = self.last_alert_time.get(track.track_id, 0)
+        if current_time - last_time < self.cooldown_seconds:
+            self.logger.debug(
+                "Skipping alert for track %d (cooldown: %.1fs remaining)",
+                track.track_id,
+                self.cooldown_seconds - (current_time - last_time),
+            )
+            return
+        
+        # Update cooldown timestamp
+        self.last_alert_time[track.track_id] = current_time
+        
         event_id = EventLogger.build_event_id(track.track_id)
         snapshot_path = self._capture_snapshot(event_id, frame)
         clip_path = self._export_clip(event_id)
@@ -72,6 +89,12 @@ class AlertManager:
             )
         )
 
+        # Use provided location or default to a mock location (India center) for map display
+        event_location = location
+        if not event_location:
+            # Default location: India center (useful for testing/demo)
+            event_location = Location(latitude=20.5937, longitude=78.9629, accuracy=0.0)
+        
         record = EventRecord(
             event_id=event_id,
             timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(assessment.timestamp)),
@@ -81,7 +104,7 @@ class AlertManager:
             reasons=assessment.reasons,
             snapshot_path=str(snapshot_path) if snapshot_path else None,
             clip_path=str(clip_path) if clip_path else None,
-            location=asdict(location) if location else None,
+            location=asdict(event_location) if event_location else None,
         )
         self.event_logger.append(record)
 
