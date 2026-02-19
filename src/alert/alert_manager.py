@@ -78,14 +78,24 @@ class AlertManager:
                     str(clip_path), f"clips/{clip_path.name}"
                 )
 
-        alert_body = self._compose_alert_body(assessment, location)
+
+        
+        # Use provided location or default to a mock location (India center) for testing/demo
+        # This ensures the email alert always has a location link even without GPS hardware
+        event_location = location
+        if not event_location:
+            event_location = Location(latitude=20.5937, longitude=78.9629, accuracy=0.0)
+
+        alert_body = self._compose_alert_body(assessment, event_location)
         media_url = firebase_snapshot or firebase_clip
+        
         self.notifier.send_alert(
             AlertMessage(
                 body=alert_body,
                 media_url=media_url,
-                latitude=location.latitude if location else None,
-                longitude=location.longitude if location else None,
+                media_path=str(snapshot_path) if snapshot_path else None,
+                latitude=event_location.latitude,
+                longitude=event_location.longitude,
             )
         )
 
@@ -133,14 +143,24 @@ class AlertManager:
     def _compose_alert_body(
         self, assessment: RiskAssessment, location: Optional[Location]
     ) -> str:
-        location_str = ""
+        # Enhanced Alert Formatting
+        timestamp_str = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(assessment.timestamp))
+        
+        location_chunk = "Location: Unknown"
+        maps_link = ""
         if location:
-            location_str = f"\nLocation: {location.latitude:.5f}, {location.longitude:.5f} ({location.source})"
-        reasons = ", ".join(assessment.reasons) if assessment.reasons else "unspecified"
+            lat, lon = location.latitude, location.longitude
+            location_chunk = f"Location: {lat:.6f}, {lon:.6f}"
+            maps_link = f"https://www.google.com/maps?q={lat},{lon}"
+
+        reasons_list = "\n".join([f"- {r}" for r in assessment.reasons]) if assessment.reasons else "- General unsafe behavior"
+
         return (
-            "Accident risk detected!\n"
-            f"Risk level: {assessment.risk_level} ({assessment.risk_score:.2f})\n"
-            f"Reasons: {reasons}"
-            f"{location_str}"
+            f"🚨 ACCIDENT RISK DETECTED 🚨\n\n"
+            f"📅 Time: {timestamp_str}\n"
+            f"⚠️ Level: {assessment.risk_level.upper()} (Score: {assessment.risk_score:.2f})\n\n"
+            f"🔍 Detected Issues:\n{reasons_list}\n\n"
+            f"📍 {location_chunk}\n"
+            f"{maps_link}"
         )
 

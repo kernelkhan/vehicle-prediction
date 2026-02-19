@@ -109,6 +109,10 @@ class YoloV8Detector:
 
         if predictions.ndim == 3:
             predictions = np.squeeze(predictions, axis=0)
+        
+        # YOLOv8 output is usually (84, 8400), we need (8400, 84)
+        if predictions.shape[0] < predictions.shape[1]:
+            predictions = predictions.T
 
         boxes = predictions[:, :4]
         scores = predictions[:, 4:]

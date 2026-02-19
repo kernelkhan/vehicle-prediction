@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<nav class="navbar">
+    <a href="/" class="navbar-brand">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+        </svg>
+        Accident Risk Monitor
+    </a>
+    <div class="navbar-links">
+        <a href="/">Dashboard</a>
+        <a href="/events">History Log</a>
+        <a href="/analytics" class="active">Analytics</a>
+        <a href="/docs" target="_blank">API Docs</a>
+    </div>
+</nav>
+
+<main>
+    <div class="grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 2rem;">
+        <div class="card">
+            <h2>Risk Distribution</h2>
+            <div style="height: 300px; position: relative;">
+                <canvas id="riskChart"></canvas>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Activity Timeline (Last 24h)</h2>
+            <div style="height: 300px; position: relative;">
+                <canvas id="timeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Key Metrics</h2>
+        <div style="display: flex; justify-content: space-around; padding: 1rem;">
+            <div style="text-align: center;">
+                <span style="font-size: 2rem; font-weight: bold; color: var(--text-primary);" id="total-events">0</span>
+                <p style="color: var(--text-secondary);">Total Events</p>
+            </div>
+            <div style="text-align: center;">
+                <span style="font-size: 2rem; font-weight: bold; color: var(--accent-red);"
+                    id="critical-events">0</span>
+                <p style="color: var(--text-secondary);">Critical Incidents</p>
+            </div>
+            <div style="text-align: center;">
+                <span style="font-size: 2rem; font-weight: bold; color: var(--accent-orange);"
+                    id="high-risk-events">0</span>
+                <p style="color: var(--text-secondary);">High Risks</p>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/axios@1.6.1/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    async function loadStats() {
+        try {
+            const response = await axios.get("/api/stats");
+            const data = response.data;
+
+            // Update Metrics
+            document.getElementById("total-events").innerText = data.total;
+            document.getElementById("critical-events").innerText = data.risk_breakdown.critical || 0;
+            document.getElementById("high-risk-events").innerText = data.risk_breakdown.high || 0;
+
+            // Risk Chart
+            const riskCtx = document.getElementById('riskChart');
+            new Chart(riskCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Low', 'Medium', 'High', 'Critical'],
+                    datasets: [{
+                        label: 'Events',
+                        data: [
+                            data.risk_breakdown.low,
+                            data.risk_breakdown.medium,
+                            data.risk_breakdown.high,
+                            data.risk_breakdown.critical
+                        ],
+                        backgroundColor: [
+                            '#22c55e', // Green
+                            '#eab308', // Yellow
+                            '#f97316', // Orange
+                            '#ef4444'  // Red
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#cbd5e1' } }
+                    }
+                }
+            });
+
+            // Timeline Chart
+            const timeCtx = document.getElementById('timeChart');
+            new Chart(timeCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data.activity_timeline),
+                    datasets: [{
+                        label: 'Events per Hour',
+                        data: Object.values(data.activity_timeline),
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#334155' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+        } catch (error) {
+            console.error("Failed to load stats", error);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadStats);
+</script>
+{% endblock %}

@@ -1,35 +1,57 @@
 {% extends "base.html" %}
 {% block title %}Event Log{% endblock %}
 {% block head_extra %}
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 {% endblock %}
 
 {% block content %}
-<section class="card">
-  <h2>Event History</h2>
-  <table class="event-table" id="event-table">
-    <thead>
-      <tr>
-        <th>Timestamp</th>
-        <th>Risk Level</th>
-        <th>Track</th>
-        <th>Reasons</th>
-        <th>Snapshot</th>
-        <th>Map</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</section>
-{% endblock %}
+<nav class="navbar">
+  <a href="/" class="navbar-brand">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+    </svg>
+    Accident Risk Monitor
+  </a>
+  <div class="navbar-links">
+    <a href="/">Dashboard</a>
+    <a href="/events" class="active">History Log</a>
+    <a href="/analytics">Analytics</a>
+    <a href="/docs" target="_blank">API Docs</a>
+  </div>
+</nav>
+<section>
+  <section>
+    <div class="controls-bar" style="justify-content: flex-end;">
+      <button class="export-btn" onclick="exportCSV()">Download Report (CSV)</button>
+    </div>
 
-{% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/axios@1.6.1/dist/axios.min.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="{{ url_for('static', path='js/main.js') }}"></script>
-<script src="{{ url_for('static', path='js/map.js') }}"></script>
-{% endblock %}
+    <div class="card">
+      <table class="event-table" id="event-table">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Risk Level</th>
+            <th>Track</th>
+            <th>Reasons</th>
+            <th>Snapshot</th>
+            <th>Map</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+  {% endblock %}
 
+  {% block scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.1/dist/axios.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Force cache bust to get latest JS
+    const s = document.createElement("script");
+    s.src = "{{ url_for('static', path='js/main.js') }}?v=" + new Date().getTime();
+    document.body.appendChild(s);
+  </script>
+  <script src="{{ url_for('static', path='js/map.js') }}"></script>
+  {% endblock %}

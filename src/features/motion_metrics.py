@@ -16,7 +16,10 @@ class MotionFeature:
     acceleration: float = 0.0
     heading_change: float = 0.0
     lateral_drift: float = 0.0
+    lateral_drift: float = 0.0
     timestamp: float = 0.0
+    speed_kmh: float = 0.0
+    velocity_vector: Optional[np.ndarray] = None
 
 
 class MotionFeatureExtractor:
@@ -45,7 +48,11 @@ class MotionFeatureExtractor:
         lateral_drift = 0.0
 
         if len(history) >= 2:
-            velocity_vec = (history[-1] - history[-2]) / self.dt
+            # Use a window of up to 3 frames for responsiveness (5 was too smooth for crashes)
+            window = min(len(history), 3)
+            # Calculate velocity over the window
+            # (pos[i] - pos[i-k]) / (k * dt)
+            velocity_vec = (history[-1] - history[-window]) / ((window - 1) * self.dt)
             velocity = float(np.linalg.norm(velocity_vec))
         else:
             velocity = 0.0
@@ -60,12 +67,23 @@ class MotionFeatureExtractor:
 
         self.last_velocity[track.track_id] = velocity_vec
 
+        # Heuristic: Estimate km/h based on pixel velocity
+        # Ideally this requires calibration (homography), but we use a dynamic scaling factor
+        # assuming objects further away (smaller) move fewer pixels for same speed.
+        # Scale factor = Reference / Box_Area_Sqrt basically.
+        # For this demo, we use a fixed conversion factor tuned for the sample video.
+        px_to_m = 0.05 # Approx 5cm per pixel
+        speed_mps = velocity * px_to_m
+        speed_kmh = speed_mps * 3.6
+
         feature = MotionFeature(
             velocity=velocity,
             acceleration=acceleration,
             heading_change=heading_change,
             lateral_drift=lateral_drift,
             timestamp=timestamp,
+            speed_kmh=speed_kmh,
+            velocity_vector=velocity_vec
         )
         self.features[track.track_id] = feature
         return feature
