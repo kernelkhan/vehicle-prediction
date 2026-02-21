@@ -63,6 +63,7 @@ window.exportCSV = exportCSV;
 
 async function initEventsPage() {
   allEvents = await fetchEvents();
+  // Events are already sorted by the API (newest first)
   renderEventTable(allEvents);
 
   document.querySelectorAll(".map-link").forEach((button) => {

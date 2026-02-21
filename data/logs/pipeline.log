@@ -12347,3 +12347,100 @@
 2026-02-16 19:57:52 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
 2026-02-16 19:57:53 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
 2026-02-16 19:58:03 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:14:39 | INFO | pipeline | Pipeline started. Press Ctrl+C to exit.
+2026-02-21 15:14:49 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:16:30 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:17:05 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:17:27 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:17:28 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:17:33 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:17:36 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:17:45 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:17:46 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:17:47 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:17:52 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:18:04 | INFO | pipeline | Received signal 2; stopping pipeline.
+2026-02-21 15:18:04 | INFO | pipeline | Pipeline stopped.
+2026-02-21 15:37:24 | INFO | pipeline | Pipeline started. Press Ctrl+C to exit.
+2026-02-21 15:37:33 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:38:46 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:22 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:23 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:24 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:25 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:27 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:28 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:29 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:30 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:31 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:32 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:33 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:34 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:36 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:37 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:38 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:55 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:55 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:56 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:57 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:58 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:39:58 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:40:00 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:40:00 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:40:01 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:40:02 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:40:02 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:40:03 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:40:03 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:40:04 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:40:05 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:04 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:05 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:06 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:07 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:09 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:09 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:10 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:11 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:12 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:14 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:15 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:15 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:17 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:18 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:41:20 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:42:31 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:42:36 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:43:06 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:43:31 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:43:31 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:43:38 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:43:40 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:43:52 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:43:53 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:43:54 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:43:58 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:44:17 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:44:46 | INFO | pipeline | Pipeline started. Press Ctrl+C to exit.
+2026-02-21 15:44:59 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:45:21 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:45:29 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:45:35 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:45:37 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:45:49 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:46:04 | ERROR | pipeline | Annotation error: cannot access local variable 'x1' where it is not associated with a value
+2026-02-21 15:47:17 | INFO | pipeline | Pipeline started. Press Ctrl+C to exit.
+2026-02-21 15:49:26 | INFO | pipeline | Pipeline started. Press Ctrl+C to exit.
+2026-02-21 15:50:41 | INFO | pipeline | Received signal 2; stopping pipeline.
+2026-02-21 15:50:41 | INFO | pipeline | Pipeline stopped.
+2026-02-21 15:50:51 | INFO | pipeline | Pipeline started. Press Ctrl+C to exit.
+2026-02-21 15:51:53 | INFO | pipeline | Received signal 2; stopping pipeline.
+2026-02-21 15:51:53 | INFO | pipeline | Pipeline stopped.
+2026-02-21 15:52:07 | INFO | pipeline | Pipeline started. Press Ctrl+C to exit.
+2026-02-21 16:07:02 | INFO | pipeline | Pipeline started. Press Ctrl+C to exit.
+2026-02-21 16:09:53 | INFO | pipeline | Pipeline started. Press Ctrl+C to exit.
+2026-02-21 16:16:03 | INFO | pipeline | Received signal 2; stopping pipeline.
+2026-02-21 16:16:04 | INFO | pipeline | Pipeline stopped.
+2026-02-21 16:16:12 | INFO | pipeline | Pipeline started. Press Ctrl+C to exit.
+2026-02-21 16:16:41 | INFO | pipeline | Received signal 2; stopping pipeline.
+2026-02-21 16:16:41 | INFO | pipeline | Pipeline stopped.

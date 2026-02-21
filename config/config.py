@@ -148,6 +148,13 @@ def load_config(env_path: Optional[Path] = None) -> AppConfig:
         env_overrides.setdefault("stream", {})["display"] = (
             os.environ["DISPLAY_STREAM"].lower() == "true"
         )
+    if "STREAM_RESOLUTION" in os.environ:
+        res_str = os.environ["STREAM_RESOLUTION"]
+        env_overrides.setdefault("stream", {})["resolution"] = [int(x) for x in res_str.split(",")]
+    if "STREAM_FPS" in os.environ:
+        env_overrides.setdefault("stream", {})["fps"] = int(os.environ["STREAM_FPS"])
+    if "MODEL_CONF_THRESHOLD" in os.environ:
+        env_overrides.setdefault("model", {})["conf_threshold"] = float(os.environ["MODEL_CONF_THRESHOLD"])
     if "MEDIA_DIR" in os.environ:
         env_overrides.setdefault("paths", {})["media_dir"] = os.environ["MEDIA_DIR"]
     if "LOG_DIR" in os.environ:

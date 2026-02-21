@@ -107,43 +107,43 @@ async function refreshDashboard() {
 function initVideoStream() {
   const img = document.getElementById("live-stream");
   const placeholder = document.getElementById("video-placeholder");
+  
   if (!img || !placeholder) return;
 
-  let errorCount = 0;
-  const maxErrors = 3;
-
-  img.onload = function () {
-    errorCount = 0;
-    placeholder.classList.add("hidden");
-    img.style.display = "block";
-  };
-
-  img.onerror = function () {
-    errorCount++;
-    if (errorCount >= maxErrors) {
-      placeholder.classList.remove("hidden");
-      img.style.display = "none";
-    } else {
-      // Retry after a short delay
-      setTimeout(() => {
-        img.src = "/video-feed?t=" + Date.now();
-      }, 1000);
-    }
-  };
-
-  // Initial load
+  // Set initial src
   img.src = "/video-feed?t=" + Date.now();
+  img.style.display = "block";
+
+  // For MJPEG streams, onload doesn't fire reliably
+  // Instead, poll for naturalWidth > 0 which indicates stream has started
+  let checkCount = 0;
+  const maxChecks = 20; // 10 seconds max
+  
+  const streamCheckInterval = setInterval(() => {
+    checkCount++;
+    
+    // If we have dimensions, the stream is working
+    if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+      placeholder.classList.add("hidden");
+      clearInterval(streamCheckInterval);
+    } else if (checkCount >= maxChecks) {
+      // Show error message
+      placeholder.innerHTML = '<p>Unable to connect to video stream</p><p style="font-size: 0.85rem; margin-top: 5px; opacity: 0.7;">Check if the pipeline is running</p>';
+      clearInterval(streamCheckInterval);
+    }
+  }, 500); // Check every 500ms
 
   // Refresh stream every 30 seconds to prevent stale connections
   setInterval(() => {
-    if (img.style.display !== "none") {
-      img.src = "/video-feed?t=" + Date.now();
+    if (!placeholder.classList.contains("hidden")) {
+      return; // Don't refresh if stream hasn't started yet
     }
+    img.src = "/video-feed?t=" + Date.now();
   }, 30000);
 }
 
 
-document.addEventListener("DOMContentLoaded", () => {
+function initDashboard() {
   if (document.getElementById("live-stream")) {
     initVideoStream();
     refreshDashboard();
@@ -156,7 +156,15 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.addEventListener("click", togglePlayback);
     }
   }
-});
+}
+
+// Check if DOM is already loaded (script injected after page load)
+if (document.readyState === 'loading') {
+  document.addEventListener("DOMContentLoaded", initDashboard);
+} else {
+  // DOM already loaded, run immediately
+  initDashboard();
+}
 
 let isPaused = false;
 

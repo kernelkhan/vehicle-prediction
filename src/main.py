@@ -341,6 +341,9 @@ class AccidentDetectionPipeline:
 
         # 3. Draw Bounding Boxes and Labels
         for track in tracks:
+            # Extract bbox coordinates FIRST
+            x1, y1, x2, y2 = track.bbox.astype(int)
+            
             # Safe class name
             cls_name = track.class_name if track.class_name else "Unknown"
             
@@ -391,7 +394,6 @@ class AccidentDetectionPipeline:
                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, timer_color, 2, cv2.LINE_AA)
             
             # Draw Box (Futuristic Corners)
-            x1, y1, x2, y2 = track.bbox.astype(int)
             l = 20 # Corner length
             t = 2  # Thickness
             

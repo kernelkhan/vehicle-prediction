@@ -78,6 +78,10 @@ async def api_events(event_logger: EventLogger = Depends(get_event_logger)):
             events.append(_build_event(item))
         except Exception:
             continue
+    
+    # Sort by timestamp descending (newest first)
+    events.sort(key=lambda e: e.timestamp, reverse=True)
+    
     return events
 
 
