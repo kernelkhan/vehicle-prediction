@@ -14,8 +14,8 @@ from .track_utils import Track, bbox_center
 
 @dataclass
 class TrackerConfig:
-    track_buffer: int = 20
-    match_threshold: float = 0.7
+    track_buffer: int = 60 # Keep tracks for 2-3s even if lost (better for crashes)
+    match_threshold: float = 0.6 # More lenient matching
     frame_rate: int = 20
     min_box_area: float = 100.0
 
@@ -125,37 +125,84 @@ class MultiObjectTracker:
         return out
 
     def _update_fallback(self, detections: list[Detection]) -> List[Track]:
-        # Simple nearest-neighbor association
-        unmatched_tracks = set(range(len(self._tracks)))
-        unmatched_detections = set(range(len(detections)))
+        from scipy.optimize import linear_sum_assignment
+        
+        if not self._tracks:
+            for det in detections:
+                 self._tracks.append(self._create_new_track(det))
+            return self._collect_tracks()
 
-        if self._tracks:
-            distance_matrix = np.zeros((len(self._tracks), len(detections)))
-            for i, track in enumerate(self._tracks):
-                for j, det in enumerate(detections):
-                    distance_matrix[i, j] = np.linalg.norm(
-                        bbox_center(track.bbox) - bbox_center(det.bbox)
-                    )
+        # Calculate cost matrix (1 - IoU) + Distance Penalty
+        n_tracks = len(self._tracks)
+        n_dets = len(detections)
+        cost_matrix = np.ones((n_tracks, n_dets)) * 1.0
+        
+        for i, track in enumerate(self._tracks):
+            pred_center = track.center + track.velocity # Simple Kalman prediction
+            for j, det in enumerate(detections):
+                # IoU Score
+                iou = self._iou(track.bbox, det.bbox)
+                
+                # Distance Score (normalized by diagonal)
+                det_center = bbox_center(det.bbox)
+                dist = np.linalg.norm(pred_center - det_center)
+                max_dist = 200.0 # pixels
+                dist_score = min(dist / max_dist, 1.0)
+                
+                # Combined cost
+                cost = (1.0 - iou) * 0.7 + dist_score * 0.3
+                cost_matrix[i, j] = cost
 
-            while distance_matrix.size > 0:
-                idx = np.unravel_index(np.argmin(distance_matrix), distance_matrix.shape)
-                track_idx, det_idx = idx
-                if distance_matrix[track_idx, det_idx] > 100:
-                    break
-                self._tracks[track_idx].update(detections[det_idx])
-                unmatched_tracks.discard(track_idx)
-                unmatched_detections.discard(det_idx)
-                distance_matrix[track_idx, :] = np.inf
-                distance_matrix[:, det_idx] = np.inf
+        # Hungarian Algorithm
+        row_inds, col_inds = linear_sum_assignment(cost_matrix)
+        
+        unmatched_tracks = set(range(n_tracks))
+        unmatched_dets = set(range(n_dets))
+        
+        matches = []
+        for r, c in zip(row_inds, col_inds):
+            if cost_matrix[r, c] < 0.8: # Threshold to reject bad matches
+                matches.append((r, c))
+                unmatched_tracks.discard(r)
+                unmatched_dets.discard(c)
+        
+        # Update matched tracks
+        for track_idx, det_idx in matches:
+            self._tracks[track_idx].update(detections[det_idx])
+            
+        # Update unmatched tracks (mark lost)
+        for track_idx in unmatched_tracks:
+            self._tracks[track_idx].mark_lost()
 
-        for idx in unmatched_tracks:
-            self._tracks[idx].mark_lost()
+        # Create new tracks
+        for det_idx in unmatched_dets:
+             self._tracks.append(self._create_new_track(detections[det_idx]))
 
-        for idx in unmatched_detections:
-            self._tracks.append(_KalmanTrack(detections[idx]))
-
+        # Cleanup dead tracks
         self._tracks = [t for t in self._tracks if t.lost < self.config.track_buffer]
+        
         return self._collect_tracks()
+
+    def _create_new_track(self, det: Detection) -> _KalmanTrack:
+        # Helper to instantiate _KalmanTrack properly
+        t = _KalmanTrack(det)
+        # Monkey patch the update method on the instance to keep logic encapsulated if needed
+        # But _KalmanTrack is a class, so we just return the instance
+        return t
+
+    @staticmethod
+    def _iou(bbox1, bbox2):
+        x1 = max(bbox1[0], bbox2[0])
+        y1 = max(bbox1[1], bbox2[1])
+        x2 = min(bbox1[2], bbox2[2])
+        y2 = min(bbox1[3], bbox2[3])
+        
+        inter_area = max(0, x2 - x1) * max(0, y2 - y1)
+        area1 = (bbox1[2] - bbox1[0]) * (bbox1[3] - bbox1[1])
+        area2 = (bbox2[2] - bbox2[0]) * (bbox2[3] - bbox2[1])
+        
+        union = area1 + area2 - inter_area
+        return inter_area / union if union > 0 else 0.0
 
     def _decay_tracks(self):
         for track in self._tracks:

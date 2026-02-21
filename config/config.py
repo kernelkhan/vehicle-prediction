@@ -80,8 +80,16 @@ class AlertSettings(BaseModel):
     email_to: Optional[str] = None
     twilio_sid: Optional[str] = None
     twilio_token: Optional[str] = None
+    # Email Settings
+    email_to: Optional[str] = None
+    email_host: str = "smtp.gmail.com"
+    email_port: int = 587
+    email_user: Optional[str] = None
+    email_password: Optional[str] = None
+    
     clip_seconds: int = 12
-    clip_codec: str = "mp4v"
+    clip_codec: str = "XVID"  # More compatible than mp4v on Windows
+    cooldown_seconds: float = 5.0  # Minimum seconds between alerts for same track
 
 
 class HardwareSettings(BaseModel):
@@ -140,6 +148,13 @@ def load_config(env_path: Optional[Path] = None) -> AppConfig:
         env_overrides.setdefault("stream", {})["display"] = (
             os.environ["DISPLAY_STREAM"].lower() == "true"
         )
+    if "STREAM_RESOLUTION" in os.environ:
+        res_str = os.environ["STREAM_RESOLUTION"]
+        env_overrides.setdefault("stream", {})["resolution"] = [int(x) for x in res_str.split(",")]
+    if "STREAM_FPS" in os.environ:
+        env_overrides.setdefault("stream", {})["fps"] = int(os.environ["STREAM_FPS"])
+    if "MODEL_CONF_THRESHOLD" in os.environ:
+        env_overrides.setdefault("model", {})["conf_threshold"] = float(os.environ["MODEL_CONF_THRESHOLD"])
     if "MEDIA_DIR" in os.environ:
         env_overrides.setdefault("paths", {})["media_dir"] = os.environ["MEDIA_DIR"]
     if "LOG_DIR" in os.environ:
@@ -158,6 +173,10 @@ def load_config(env_path: Optional[Path] = None) -> AppConfig:
         "ALERT_EMAIL",
         "TWILIO_ACCOUNT_SID",
         "TWILIO_AUTH_TOKEN",
+        "EMAIL_HOST",
+        "EMAIL_PORT",
+        "EMAIL_USER",
+        "EMAIL_PASSWORD",
     ):
         if key in os.environ:
             field = key.lower()
@@ -167,6 +186,15 @@ def load_config(env_path: Optional[Path] = None) -> AppConfig:
                 field = "twilio_sid"
             if key == "TWILIO_AUTH_TOKEN":
                 field = "twilio_token"
+            if key == "EMAIL_HOST":
+                field = "email_host"
+            if key == "EMAIL_PORT":
+                field = "email_port"
+            if key == "EMAIL_USER":
+                field = "email_user"
+            if key == "EMAIL_PASSWORD":
+                field = "email_password"
+                
             env_overrides.setdefault("alert", {})[field] = os.environ[key]
     if "WHATSAPP_ENABLED" in os.environ:
         env_overrides.setdefault("alert", {})["whatsapp_enabled"] = (

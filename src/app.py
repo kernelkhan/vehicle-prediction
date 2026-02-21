@@ -28,6 +28,11 @@ def create_app() -> FastAPI:
     static_dir.mkdir(parents=True, exist_ok=True)
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
+    # Mount media directory for snapshots/clips
+    media_dir = Path(config.paths.media_dir_abs)
+    media_dir.mkdir(parents=True, exist_ok=True)
+    app.mount("/media", StaticFiles(directory=media_dir), name="media")
+
     app.state.config = config
     app.state.event_logger = EventLogger(Path(config.paths.event_log_abs))
 

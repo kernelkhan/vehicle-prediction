@@ -15,6 +15,19 @@ class StreamManager:
     def __init__(self) -> None:
         self._lock = threading.Lock()
         self._frame: Optional[bytes] = None
+        self._paused = False
+
+    def pause(self) -> None:
+        with self._lock:
+            self._paused = True
+
+    def resume(self) -> None:
+        with self._lock:
+            self._paused = False
+
+    def is_paused(self) -> bool:
+        with self._lock:
+            return self._paused
 
     def publish(self, frame) -> None:
         success, encoded = cv2.imencode(".jpg", frame)

@@ -1,107 +1,257 @@
-## Smart Vision-Based Accident Prediction & Emergency Dispatch System
+# 🚗 Smart Vision-Based Accident Prediction & Emergency Dispatch System
 
-End-to-end Raspberry Pi solution for real-time traffic incident prediction, detection, and emergency dispatch automation. Combines YOLOv8 object detection, multi-object tracking (ByteTrack), motion analytics, IMU jerk sensing, GPS tagging, and multi-channel alerting with a FastAPI-powered dashboard.
-
-### Hardware Overview
-- Raspberry Pi 4 (4GB+ recommended), active cooling, 64GB microSD
-- Pi Camera v2 (or USB camera)
-- Optional sensors:
-  - MPU-6050 IMU (I2C) for jerk detection
-  - USB GPS receiver (serial) or smartphone hotspot GPS share
-  - HC-SR04 ultrasonic for proximity (future use)
-  - Buzzer/LED driver for on-device alarms
-
-### Project Layout
-- `src/` core services (detection, tracking, risk engine, alert manager, sensors)
-- `config/` configuration helpers (`env.example` → copy to `.env`)
-- `web/` FastAPI templates, static assets, mock data
-- `scripts/` setup helpers for dependencies, ONNX conversion, dashboard launch
-- `diagrams/` ASCII architecture & data-flow diagrams
-- `tests/` unit tests for deterministic components
-
-### Quick Start
-1. **Clone & install dependencies**
-   ```bash
-   git clone <repo-url> smart-vision-accident-system
-   cd smart-vision-accident-system
-   chmod +x scripts/*.sh
-   ./scripts/install_dependencies.sh
-   ```
-2. **Configure environment**
-   ```bash
-   cp config/env.example .env
-   # edit .env (Twilio, Firebase, GPS, hardware toggles, paths)
-   ```
-3. **Prepare YOLOv8 ONNX**
-   ```bash
-   ./scripts/setup_onnx_model.sh
-   ```
-   > Requires internet + `ultralytics` package. Script exports an optimized `models/yolov8_accident.onnx`.
-
-4. **Run perception pipeline**
-   ```bash
-   source .venv/bin/activate
-   python -m src.main
-   ```
-
-5. **Launch dashboard**
-   ```bash
-   ./scripts/run_dashboard.sh
-   ```
-   Access via `http://<pi-ip>:8000` on LAN. `http://<pi-ip>:8000/events` for logs.
-
-### Configuration Reference
-Key `.env` parameters (full list in `config/env.example`):
-- `VIDEO_SOURCE`: camera index or RTSP/HTTP stream URL
-- `DISPLAY_STREAM`: set `true` for HDMI preview window
-- `SMS_ENABLED`, `WHATSAPP_ENABLED`: toggle alert channels
-- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `SMS_FROM`, `SMS_TO`, etc.
-- `FIREBASE_*`: credentials JSON path, realtime DB URL, storage bucket
-- `USE_IMU`, `USE_GPS`: hardware toggles (fallbacks auto-enable mock data)
-- `MEDIA_DIR`, `LOG_DIR`: storage roots (auto-created)
-
-Pydantic settings also support direct overrides via environment variables using nested keys (see `config/config.py`).
-
-### Core Runtime Flow
-1. Frames captured via OpenCV → YOLOv8 ONNX detection → ByteTrack tracking.
-2. Motion feature extractor derives velocity, acceleration, heading change, lateral drift.
-3. TTC estimator computes converging trajectories per tracked pair.
-4. Risk engine scores incidents (sudden decel, low TTC, jerk, freeze detection).
-5. Alert manager captures snapshot/clip (ring buffer), records GPS, dispatches SMS/WhatsApp, syncs to Firebase, appends local log.
-6. FastAPI dashboard streams annotated MJPEG feed, event timeline, Leaflet map.
-
-Diagrams: see `diagrams/architecture.txt` & `diagrams/data_flow.txt`.
-
-### Testing & Simulation
-Use mock data when hardware unavailable:
-- `web/assets/mock_events.json` populates dashboard timeline.
-- Configure `VIDEO_SOURCE` to point at `data/samples/sample_video.mp4` (provide your clip).
-- IMU/GPS handlers gracefully fall back to simulated values with warning logs.
-
-Run tests:
-```bash
-source .venv/bin/activate
-pytest
-```
-
-### Troubleshooting
-- **Low FPS / Thermal throttling**: ensure active cooling, reduce resolution (e.g. 640x480), drop FPS to 15, switch to YOLOv8n or quantized variant.
-- **ONNX runtime errors**: confirm `onnxruntime` ARM build; fallback to CPU provider by editing `.env`.
-- **Twilio alerts failing**: verify sandbox configuration for WhatsApp, ensure outbound internet.
-- **Firebase upload blocked**: service account JSON must have storage + database permissions; bucket region should match.
-- **No GPS lock**: check serial permissions (`sudo usermod -a -G dialout $USER`), fallback IP geolocation triggered automatically.
-
-### Deployment Tips
-- Enable `systemd` services for `src.main` and `run_dashboard.sh`.
-- Use `tmux` or `supervisor` for resilience.
-- Rotate logs via `logrotate` if running long term.
-- For remote dashboard access, use SSH tunneling or secure reverse proxies.
-
-### Roadmap Hooks
-- `src/sensors/ultrasonic_handler.py`: integrate obstacle-aware TTC adjustments.
-- `alert/notifier.py`: extend with MQTT/ESP32 triggers, in-vehicle CAN bus integration.
-- Edge TPU / NPU acceleration by providing alternative ONNX runtime providers.
+A comprehensive, real-time traffic incident prediction and monitoring system powered by Computer Vision and AI. This system runs on edge devices (like Raspberry Pi) or standard PCs to detect vehicles, analyze their behavior, and predict accidents before they happen.
 
 ---
-**License & Safety Notice**: Intended as driver-assist telemetry. Not a substitute for human supervision or certified ADAS systems. Validate thoroughly before field deployment.
 
+## 📖 Table of Contents
+1. [Project Overview](#-project-overview)
+2. [Key Features](#-key-features)
+3. [System Architecture](#-system-architecture)
+4. [Project Structure](#-project-structure)
+5. [Installation & Setup](#-installation--setup)
+6. [Configuration](#-configuration)
+7. [Running the System](#-running-the-system)
+8. [Dashboard & Visualization](#-dashboard--visualization)
+9. [Testing & Scenarios](#-testing--scenarios)
+10. [Troubleshooting](#-troubleshooting)
+
+---
+
+## 🔭 Project Overview
+
+This project is an end-to-end solution designed to improve road safety by automatically detecting hazardous driving behaviors. It uses **YOLOv8** for object detection and **ByteTrack** for multi-object tracking. By analyzing the motion trajectories of vehicles, the system calculates risk metrics like **Time-to-Collision (TTC)** and **Jerks (Sudden Acceleration/Deceleration)** to flag potential accidents.
+
+When a high-risk event is detected, the system:
+1.  Logs the event detailed metadata.
+2.  Captures a purely visual snapshot and video clip.
+3.  Triggers alerts (SMS/WhatsApp) via Twilio.
+4.  Updates a real-time web dashboard.
+
+---
+
+## ✨ Key Features
+
+-   **Real-time Object Detection**: Identifies Cars, Trucks, Buses, Motorbikes, and Pedestrians using YOLOv8.
+-   **Multi-Object Tracking**: Robustly tracks vehicles across frames using ByteTrack + Kalman Filtering, handling occlusions and crossing paths.
+-   **Advanced Risk Analysis**:
+    -   **Collision Prediction**: Calculates TTC (Time-to-Collision) for converging trajectories.
+    -   **Anomaly Detection**: Identifies sudden braking, swerving, and erratic steering events.
+    -   **Stationary Vehicle Detection**: Flags stalled vehicles in active lanes.
+-   **Emergency Alerting**: Automated SMS and WhatsApp notifications with location data.
+-   **Interactive Dashboard**:
+    -   Live video feed with bounding boxes and risk annotations.
+    -   Real-time event timeline and historical logs.
+    -   GPS mapping of incidents.
+-   **Edge Optimized**: Designed to run efficiently on Raspberry Pi 4/5 or standard CPUs.
+
+---
+
+## 🏗 System Architecture
+
+The system operates as a pipeline of synchronized modules:
+
+1.  **Input**: Video stream (Camera, RTSP, or File).
+2.  **Detection (The "Eyes")**: YOLOv8n scans frames for vehicles/people.
+3.  **Tracking (The "Memory")**: ByteTrack assigns stable IDs to objects to follow them over time.
+4.  **Feature Extraction (The "Brain")**:
+    -   Computes Velocity (px/s → km/h), Acceleration, and Heading.
+    -   Smoothes data over 5 frames to reduce jitter.
+5.  **Risk Engine (The "Judge")**:
+    -   Evaluates physics data against safety thresholds.
+    -   Rules: Sudden Deceleration (>150px/s²), TTC < 1.0s, Swerving.
+6.  **Response**:
+    -   **AlertManager**: Saves media, sends alerts, updates database.
+    -   **Dashboard**: Visualizes the live state via FastAPI & WebSockets.
+
+---
+
+## 📂 Project Structure
+
+```
+d:\Vehicle\
+├── config/                 # Configuration files
+│   ├── env.example         # Template for environment variables
+│   └── config.py           # Pydantic configuration models
+├── data/                   # Runtime data storage
+│   ├── media/              # Saved snapshots and clips of accidents
+│   ├── logs/               # JSON event logs and system logs
+│   └── samples/            # Sample videos for testing
+├── diagrams/               # Architecture diagrams
+├── models/                 # AI Models (YOLOv8 ONNX/PT files)
+├── scripts/                # Utility scripts (install, run, setup)
+├── src/                    # Source Code
+│   ├── app.py              # FastAPI Dashboard entry point
+│   ├── main.py             # Core Pipeline entry point
+│   ├── detection/          # YOLOv8 integration
+│   ├── tracking/           # ByteTrack implementation
+│   ├── risk/               # Physics & Risk Logic
+│   ├── storage/            # File & Database handlers
+│   └── lib/                # Shared utilities
+├── web/                    # Frontend Dashboard
+│   ├── templates/          # HTML templates
+│   └── static/             # CSS/JS assets
+├── requirements.txt        # Python dependencies
+└── README.md               # This file
+```
+
+---
+
+## ⚙ Installation & Setup
+
+### Prerequisites
+-   **OS**: Windows 10/11, Linux (Ubuntu/Raspbian), or macOS.
+-   **Python**: Version 3.8 to 3.11.
+-   **Hardware**: Webcam (for live) or Video File (for testing).
+
+### Windows Setup Guide
+
+1.  **Clone the Repository**
+    ```powershell
+    git clone <repository-url>
+    cd Vehicle
+    ```
+
+2.  **Set PowerShell Policy** (Run as Admin)
+    Allows script execution for virtual environments.
+    ```powershell
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    ```
+
+3.  **Create & Activate Virtual Environment**
+    ```powershell
+    python -m venv .venv
+    .\.venv\Scripts\Activate.ps1
+    ```
+
+4.  **Install Dependencies**
+    ```powershell
+    pip install -r requirements-windows.txt
+    ```
+    *Note: Use `requirements.txt` for Linux/Raspberry Pi.*
+
+5.  **Setup the Model**
+    Downloads/exports the YOLOv8 model to ONNX format.
+    ```powershell
+    python setup_model.py
+    ```
+
+---
+
+## 🔧 Configuration
+
+The system uses a `.env` file for all settings.
+
+1.  **Create `.env`**
+    ```powershell
+    cp config\env.example .env
+    ```
+
+2.  **Edit `.env` (Key Settings)**
+    Open `.env` in a text editor:
+
+    -   **Input Source**:
+        ```ini
+        # '0' for webcam, or path to video file
+        VIDEO_SOURCE=data/samples/traffic.mp4
+        ```
+    -   **Alert Configuration** (Optional):
+        ```ini
+        TWILIO_ACCOUNT_SID=your_sid
+        TWILIO_AUTH_TOKEN=your_token
+        SMS_TO=+1234567890
+        ```
+    -   **Hardware Toggles**:
+        ```ini
+        USE_IMU=false       # Set true only if MPU6050 is connected
+        USE_GPS=false       # Set true only if GPS module is connected
+        ```
+
+---
+
+## 🚀 Running the System
+
+You generally run two components: the **Backend Pipeline** (for processing) and the **Dashboard** (for viewing).
+
+### 1. Run the Detection Pipeline
+Processes video, detects risks, and saves events.
+```powershell
+# Ensure venv is activated
+python run_pipeline.py
+```
+*Press `q` in the video window to stop.*
+
+### 2. Run the Dashboard
+Starts the Web UI to view the stream and alerts.
+```powershell
+python -m src.app
+```
+*Access at: http://localhost:8000*
+
+---
+
+## 📊 Dashboard & Visualization
+
+The web dashboard provides a comprehensive view of the system's status:
+
+-   **Live Stream**: Shows the video with real-time bounding boxes.
+    -   **Green Box**: Safe object.
+    -   **Yellow**: Warning/Caution.
+    -   **Red**: Critical/Danger.
+-   **Event Log**: Sidebar list of all detected incidents. Click an event to view its details.
+-   **Status Indicators**: Shows current system health (FPS, Connectivity).
+
+---
+
+## 🧪 Testing & Scenarios
+
+To verify the system is working, you can use sample videos.
+
+### Common Test Scenarios
+1.  **Sudden Braking**:
+    -   *Input*: Video of a car stopping abruptly.
+    -   *Expected Result*: Risk level "High", alerts "Sudden Deceleration", visual indicator turns Red.
+2.  **Tailgating / Low TTC**:
+    -   *Input*: Car following another very closely at speed.
+    -   *Expected Result*: Risk Level "Critical", "Time-to-Collision < 2s".
+3.  **Stationary Vehicle**:
+    -   *Input*: Car stopped in a moving lane.
+    -   *Expected Result*: "Stationary Vehicle Detected" warning.
+
+### Verifying Outputs
+Check the `data/` folder for generated evidence:
+-   `data/logs/events.json`: Text log of the incident.
+-   `data/media/snapshots/`: JPG images of the moment of detection.
+-   `data/media/clips/`: Short MP4 clips leading up to the event.
+
+---
+
+## ❓ Troubleshooting
+
+**Q: I get "ModuleNotFoundError: No module named 'numpy'"**
+A: Ensure your virtual environment is activated (`.venv\Scripts\Activate`) and you installed requirements.
+
+**Q: The video is very slow / low FPS.**
+A:
+-   Resize the input video to 640x480 or lower.
+-   Switch to `yolov8n.onnx` (Nano model) which is fastest.
+-   Disable `DISPLAY_STREAM` in `.env` if running headless.
+
+**Q: Dashboard shows no video.**
+A: Ensure the pipeline (`run_pipeline.py`) is running. The dashboard relies on the pipeline to generate the visuals/data, or ensure `src/app.py` is configured to stream directly if using the integrated mode.
+
+**Q: Alerts are not sending.**
+A: Check your Twilio credentials in `.env`. Ensure you have internet connectivity.
+
+---
+
+## 🔮 Roadmap
+
+-   [ ] **Night Mode**: Enhanced model training for low-light conditions.
+-   [ ] **Multi-Camera Support**: Fusing data from multiple feeds.
+-   [ ] **Hardware Integration**: CAN-bus support for reading real vehicle speed data.
+-   [ ] **Cloud Sync**: Automatic upload of critical events to cloud storage.
+
+---
+**License**: MIT
+**Disclaimer**: This system is for driver assistance and research. Always maintain control of your vehicle.
